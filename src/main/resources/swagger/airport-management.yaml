@@ -1,0 +1,604 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: Airport Management
+  description: Application to manage airport related functionalities
+schemes:
+  - http
+basePath: /airport-management/v1
+paths:
+  /countries:
+    get:
+      operationId: searchCountry
+      tags:
+        - Country
+      summary: API to search/list countries
+      description: >
+        API to search/retrieve list of countries available in the world. 
+        API provides option to search the list of countries based on respective
+        countryCode and/or country's name. API also supports partial/fuzzy search for
+        these search parameters.
+        
+        If no search parameter is provided in request, then API will retrieve all the
+        countries.
+        
+        The API will return the list of countries found for the given input in 
+        response. If there are no countries found for given input, then API will return
+        empty list.
+      parameters:
+        - in: query
+          name: countryCode
+          description: >-
+            ISO code of the country for which country details needs to be retrieved.
+            This is an optional field and if provided, then API will return country
+            matching the provided countryCode.
+          required: false
+          type: string
+        - in: query
+          name: name
+          description: >-
+            Name of the country based on which country needs to be retrieved.
+            This is an optional field and if provided, then API will return country
+            matching the provided name.
+          required: false
+          type: string  
+      produces:
+        - application/json; charset=UTF-8
+      responses:
+        '200':
+          description: Success Response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Country'
+            description: >-
+              List of countries found for the request
+        '500':
+          description: Server encountered unexpected condition
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            Internal Server Error:
+              code: 500001
+              reason: Service encountered an unexpected condition
+  /countries/aggregation:
+    get:
+      operationId: retrieveCountryAggregationData
+      tags:
+        - Country
+      summary: API to retrieve aggregated data related to countries
+      description: >
+        API to retrieve aggregated data for countries based on the provided groupBy and
+        aggregation filters provided in request.
+        
+        Currently the API supports to provide the airport count per country.
+        
+        API also provides the option to sort the aggregated data based on the
+        aggregation being performed.
+        The number of result that needs to be retrieved can also be provided in request to retrieve limited result.
+        
+      parameters:
+        - in: query
+          name: groupBy
+          description: >-
+            Field based on which the aggregation needs to be performed.
+            Possible Values: airport
+            
+            Note: Currently the possible value for this is single field airport.
+            The parameter can be extended based on the requirements to support
+            group by based on multiple fields
+          required: true
+          type: string
+        - in: query
+          name: aggregation
+          description: >-
+            Indicates what aggregation needs to be performed based on the groupBy
+            field.
+            Possible Values: count
+            
+            Note: Currently the possible value for this is count.
+            The parameter can be extended based on the requirements to support
+            and provide multiple aggregated data based on the groupBy field
+          required: true
+          type: string
+        - in: query
+          name: sortOrder
+          description: >-
+            Defines the order in which the result would be returned.
+            Possible values: ASC (ascending), DESC (desecending)
+            
+            Note: This is an optional field, and if not provided then
+            default sortOrder will be considered as DESC
+          required: false
+          type: string
+          default: DESC
+        - in: query
+          name: limit
+          description: >-
+            Indiciates the maximum number of resources that needs to be fetched
+            in the response.
+            
+            Note: This is an optional field, and if not provided then
+            default limit as 10 will be considered.
+          required: false
+          type: integer
+      produces:
+        - application/json; charset=UTF-8
+      responses:
+        '200':
+          description: Success response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CountryAggregatedData'
+            description: >-
+              Aggregated data found per country as per request
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            Missing groupBy:
+              code: 400001
+              reason: >-
+                Missing mandatory parameter: groupBy
+            Invalid value for sortOrder:
+              code: 400002
+              reason: >-
+                Invalid value for parameter: sortOrder
+        '500':
+          description: Server encountered unexpected condition
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            Internal Server Error:
+              code: 500001
+              reason: Service encountered an unexpected condition
+  /airports:
+    get:
+      operationId: searchAirport
+      tags:
+        - Airport
+      summary: API to search/list airports based on provided input
+      description: >
+        API to search/retrieve list of airports based on the given input parameters. 
+        API provides option to search the list of airports based on respective
+        countryCode and/or airports's name. API also supports partial/fuzzy search for
+        these search parameters.
+        
+        If no search parameter is provided in request, then API will list all airports.
+        
+        API supports pagination and provides the option list of airports in paginated
+        format.
+        API is also capable to perform sorting of the search based on the given
+        parameter. Sorted results can be returned in either ascending or descending
+        order as requested by the consumer.
+        
+        If there are no airprots found for given input, then API will return
+        empty list.
+      parameters:
+        - in: query
+          name: country.countryCode
+          description: >-
+            ISO code of the country for which list of airports needs to be searched.
+            This is an optional field and if provided, then API will return airports
+            matching the provided countryCode.
+          required: false
+          type: string
+        - in: query
+          name: name
+          description: >-
+            Name of the airport based on which list of airports needs to be searched.
+            This is an optional field and if provided, then API will return airports
+            matching the provided name.
+          required: false
+          type: string
+        - in: query
+          name: offset
+          description: >-
+            Requested index for start of resources to be provided in response.
+            Default value: 0
+          required: false
+          type: integer
+          default: 0
+        - in: query
+          name: limit
+          description: >-
+            Requested number of maximum number of airports to be provided in response.
+            Default value: 20
+          required: false
+          type: integer
+        - in: query
+          name: sortBy
+          description: >-
+            Name of the search parameter over which the results needs to be sorted.
+            Possible Values: countryCode, name
+            
+            Note: If not present in request, then default value countryCode will be
+            considered.
+          required: false
+          type: string
+          default: country.countryCode
+        - in: query
+          name: sortOrder
+          description: >-
+            Defines the order in which the result would be returned.
+            Possible Values: ASC(Ascending), DESC(Descending)
+            
+            Note: This is an optional field, and if not provided then
+            default sortOrder will be considered as ASC
+          required: false
+          type: string
+          default: ASC
+      produces:
+        - application/json; charset=UTF-8
+      responses:
+        '200':
+          description: Success response
+          schema:
+            $ref: '#/definitions/AirportResponse'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            Invalid sortOrder:
+              code: 400001
+              reason: >-
+                Invalid value for parameter: sortOrder
+        '500':
+          description: Server encountered unexpected condition
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            Internal Server Error:
+              code: 500001
+              reason: Service encountered an unexpected condition
+  /airports/{airportId}:
+    get:
+      operationId: getAirport
+      tags:
+        - Airport
+      summary: API to retrieve aiport based on the given id
+      description: >
+        API to retrieve airport information based on the given id of airport.
+        API will also validate if airport with given id exists. If no airport with
+        given id is found in database, then API will return appropriate error response.
+      parameters:
+        - in: path
+          name: airportId
+          description: >-
+            Unique Identifier of the aiport based on which airport needs to be retrieved
+          required: true
+          type: integer
+          format: int64
+      produces:
+        - application/json; charset=UTF-8
+      responses:
+        '200':
+          description: Success response
+          schema:
+            $ref: '#/definitions/Airport'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            Missing airportId:
+              code: 400001
+              reason: >-
+                Missing mandatory parameter: airportId
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            Airport not found:
+              code: 404001
+              reason: >-
+                Airport not found for given input: airportId
+        '500':
+          description: Server encountered unexpected condition
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            Internal Server Error:
+              code: 500001
+              reason: Service encountered an unexpected condition
+  /airports/{airportId}/runways:
+    get:
+      operationId: retrieveRunwayForAirport
+      tags:
+        - Runway
+      summary: API to retrieve runways for an airport
+      description: >
+        API is used to retrieve the list of runways for a given airport.
+        API will also validate if airport with given id exists. If no airport with
+        given id is found in database, then API will return appropriate error response.
+      parameters:
+        - in: path
+          name: airportId
+          description: >-
+            Unique Identifier of the airport for which list of runways needs to be retrieved
+          required: true
+          type: integer
+          format: int64
+      produces:
+        - application/json; charset=UTF-8
+      responses:
+        '200':
+          description: Success response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Runway'
+            description: >-
+              List of runways found for the given airport
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            Missing airportId:
+              code: 400001
+              reason: >-
+                Missing mandatory parameter: airportId
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            Airport not found:
+              code: 404001
+              reason: >-
+                Airport not found for given input: airportId
+        '500':
+          description: Server encountered unexpected condition
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            Internal Server Error:
+              code: 500001
+              reason: Service encountered an unexpected condition
+definitions:
+  ErrorResponse:
+    description: Response body for the error scenarios
+    properties:
+      code:  
+        type: string
+        description: >-
+          Indicates the application related status code.
+      reason:
+        type: string
+        description: >-
+          Reason provides more information on the error code being returned
+  Country:
+    properties:
+      countryId:
+        type: integer
+        format: int64
+        description: >-
+          Unique identifier of the country
+      countryCode:
+        type: string
+        description: >-
+          Two letter ISO code for the country
+      name:
+        type: string
+        description: >-
+          Name of the country
+      continent:
+        type: string
+        description: >-
+          Continent under which the country is.
+      wikipediaLink:
+        type: string
+        description: >-
+          Wikipedia URL for the country if present
+      keywords:
+        type: string
+        description: >-
+          Keywords for country if present
+  CountryAggregatedData:
+    properties:
+      countryId:
+        type: integer
+        format: int64
+        description: >-
+          Unique identifier of the country
+      countryCode:
+        type: string
+        description: >-
+          Two letter ISO code for the country
+      aggregatedData:
+        type: array
+        items:
+          $ref: '#/definitions/AggregatedData'
+        description: >-
+          Aggregated data requested for the country
+  AggregatedData:
+    properties:
+      type:
+        type: string
+        description: >-
+          Type of aggregrated data, for example count.
+        example: count
+      value:
+        type: string
+        description: >-
+          Aggregated value for the given type
+        example: 1000
+  AirportResponse:
+    properties:
+      totalNumberOfRecords:
+        type: integer
+        format: int64
+        description: >-
+          Total number of records found for given search criteria irrespective of
+          offset and limit.
+          This will be returned to facilitate pagination support.
+      airports:
+        type: array
+        items:
+          $ref: '#/definitions/Airport'
+        description: >-
+          List of airports found for given search criteria.
+          If no records are found for given input, the API will return this as
+          empty list
+  Airport:
+    properties:
+      airportId:
+        type: integer
+        format: int64
+        description: >-
+          Unqiue identifier of the airport
+      identifier:
+        type: string
+        description: >-
+          Identifier code of the airport
+      type:
+        type: string
+        description: >-
+          Indiciates the type of airport.
+          Possible values- small_airport, balloonport, heliport, larget_airport, seaplane_base, medium_airport, closed
+      name:
+        type: string
+        description: >-
+          Name of the airport
+      latitude:
+        type: string
+        description: >-
+          Latitude of the airport in degrees.
+      longitude:
+        type: string
+        description: >-
+          Longitude of the airport in degrees.
+      elevation:
+        type: string
+        description: >-
+          Elevation of the airport in feet(ft).
+      countryRef:
+        $ref: '#/definitions/Country'
+        description: >-
+          Reference of the country in which airport is present
+      isoRegion:
+        type: string
+        description: >-
+          ISO Region code in which airport is present.
+      municipality:
+        type: string
+        description: >-
+          Municipality in which the airport is present.
+      scheduledService:
+        type: string
+        description: >-
+          Indicates if the scheduled services are available for the airport.
+      gpsCode:
+        type: string
+        description: >-
+          GPS code of the airport.
+      iataCode:
+        type: string
+        description: >-
+          IATA location identifier allocated to the airport.
+      localCode:
+        type: string
+        description: >-
+          Local code of the airport.
+      homeLink:
+        type: string
+        description: >-
+          Airport's website URL.
+      wikipediaLink:
+        type: string
+        description: >-
+          Wikipedia page URL for the airport.
+      keywords:
+        type: string
+        description: >-
+          Keywords for the airport
+      runways:
+        type: array
+        items:
+          $ref: '#/definitions/Runway'
+        description: >-
+          List of runways for the airport.
+  Runway:
+    properties:
+      runwayId:
+        type: integer
+        format: int64
+        description: >-
+          Unique identifier of runway.
+      length:
+        type: string
+        description: >-
+          Length of the runway
+          Unit: ft (feets)
+      width:
+        type: string
+        description: >-
+          Width of the runway.
+          Unit: ft (feets)
+      surface:
+        type: string
+        description: >-
+          Surface details of the runway
+      lighted:
+        type: boolean
+        description: >-
+          Indicates if the airport is lighted
+      closed:
+        type: boolean
+        description: >-
+          Indicates if the airport is closed.
+      lengthLatitude:
+        type: string
+        description: >-
+          Latitude of the length of runway.
+          Unit: Degrees
+      lengthLongitude:
+        type: string
+        description: >-
+          Longitude of the length of runway.
+          Unit: Degrees
+      lengthElevation:
+        type: string
+        description: >-
+          Elevation of the length of runway.
+          Unit: ft (feets)
+      lengthHeading:
+        type: string
+        description: >-
+          Heading of the length of runway.
+          Unit: Degrees
+      lengthDisplacementThreshold:
+        type: string
+        description: >-
+          Displacement threshold of length of runway.
+          Unit: ft (feets)
+      heightLatitude:
+        type: string
+        description: >-
+          Latitude of the height of runway
+          Unit: Degrees
+      heightLongitude:
+        type: string
+        description: >-
+          Longitude of the height of runway
+          Unit: Degrees
+      heightElevation:
+        type: string
+        description: >-
+          Elevation of height of runway.
+          Unit: ft (feets)
+      heightHeading:
+        type: string
+        description: >-
+          Heading of the height of runway.
+          Unit: Degrees
+      heightDisplacementThreshold:
+        type: string
+        description: >-
+          Displacement threshold of height of runway.
+          Unit: ft (feets)
