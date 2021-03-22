@@ -186,11 +186,11 @@ paths:
           required: false
           type: string
         - in: query
-          name: name
+          name: country.name
           description: >-
-            Name of the airport based on which list of airports needs to be searched.
+            Name of the country based on which list of airports needs to be searched.
             This is an optional field and if provided, then API will return airports
-            matching the provided name.
+            matching the provided country's name.
           required: false
           type: string
         - in: query

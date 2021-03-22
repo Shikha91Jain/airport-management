@@ -114,7 +114,7 @@ public class AirportService {
 	 * 
 	 * @param countryCode - CountryCode for which list of airports
 	 * needs to be retrieved
-	 * @param name - Name of airport for which list of airports
+	 * @param countryName - Name of country for which list of airports
 	 * needs to be retrieved
 	 * @param offset - Starting index from which the list of airports
 	 * needs to be retrieved
@@ -126,13 +126,13 @@ public class AirportService {
 	 * @return AirportResponse - Response containing the airports
 	 * found for the request and total number of records
 	 */
-	public AirportResponse searchAirport(String countryCode, String name, Integer offset, Integer limit, 
+	public AirportResponse searchAirport(String countryCode, String countryName, Integer offset, Integer limit, 
 			String sortBy, String sortOrder) {
 		
 		List<com.assessment.entity.Airport> airports = null;
 		
 		// Retrieve count of airports found based on given fitlers in request
-		long airportCount = retrieveSearchAirportCount(countryCode, name);
+		long airportCount = retrieveSearchAirportCount(countryCode, countryName);
 		
 		// Check if airportCount is greater than 0. If yes, then retrieve
 		// the airport data with the requested pagination & sorting
@@ -142,7 +142,7 @@ public class AirportService {
 			limit = limit != null ? limit : searchAirportDefaultPageSize;
 			
 			// Retrieve the list of airports from database
-			airports = searchAirportInDatabase(countryCode, name, 
+			airports = searchAirportInDatabase(countryCode, countryName, 
 					offset, limit, sortBy, sortOrder);
 		}
 		
@@ -160,26 +160,26 @@ public class AirportService {
 	 * 
 	 * @param countryCode - Country code based on which list of airport needs
 	 * to be retrieved
-	 * @param name - Name of the airport based on which list of airport
+	 * @param countryName - Name of the country based on which list of airport
 	 * needs to be retrieved
 	 * @return long - Number of airports found based on given filters
 	 */
-	public long retrieveSearchAirportCount(String countryCode, String name) {
+	public long retrieveSearchAirportCount(String countryCode, String countryName) {
 		long airportCount;
 		
 		// Check if both countryCode and name is coming in request
 		// If yes, then retrieve count based on both countryCode and name
-		if(StringUtils.isNoneEmpty(countryCode, name)) {
-			airportCount = airportRepository.countByCountry_CountryCodeContainingIgnoreCaseAndNameContainingIgnoreCase(
-					countryCode, name);
+		if(StringUtils.isNoneEmpty(countryCode, countryName)) {
+			airportCount = airportRepository.countByCountry_CountryCodeContainingIgnoreCaseAndCountry_NameContainingIgnoreCase(
+					countryCode, countryName);
 		} else if(StringUtils.isNotBlank(countryCode)) {
 			// If only countryCode is provided in request, then retrieve
 			// the count of airports based on countryCode
 			airportCount = airportRepository.countByCountry_CountryCodeContainingIgnoreCase(countryCode);
-		} else if(StringUtils.isNotBlank(name)) {
+		} else if(StringUtils.isNotBlank(countryName)) {
 			// If only name is provided in request, then retrieve the
 			// count of airports based on name
-			airportCount = airportRepository.countByNameContainingIgnoreCase(name);
+			airportCount = airportRepository.countByCountry_NameContainingIgnoreCase(countryName);
 		} else {
 			// If not filters are provided, then retrieve the count
 			// of all airports present
@@ -196,7 +196,7 @@ public class AirportService {
 	 * 
 	 * @param countryCode - Country code based on which list of airport needs
 	 * to be retrieved
-	 * @param name - Name of the airport based on which list of airport
+	 * @param countryName - Name of the country based on which list of airport
 	 * needs to be retrieved
 	 * @param offset - Starting index from which airports needs to be read 
 	 * @param limit - Maximum number of records that needs to be fetched starting
@@ -206,7 +206,7 @@ public class AirportService {
 	 * @return List<com.assessment.entity.Airport> - List of airport entities found
 	 * in database
 	 */
-	public List<com.assessment.entity.Airport> searchAirportInDatabase(String countryCode, String name, 
+	public List<com.assessment.entity.Airport> searchAirportInDatabase(String countryCode, String countryName, 
 			Integer offset, Integer limit, String sortBy, String sortOrder) {
 		
 		List<com.assessment.entity.Airport> airports = null;
@@ -215,19 +215,19 @@ public class AirportService {
 		// for pagination and sorting.
 		Pageable pageable = GenericUtils.mapPageable(offset, limit, sortBy, sortOrder);
 		
-		if(StringUtils.isNoneBlank(countryCode, name)) {
+		if(StringUtils.isNoneBlank(countryCode, countryName)) {
 			// If both countryCode and name are present, then retrieve
 			// the list of airports based on countryCode and name
-			airports = airportRepository.findAllByCountry_CountryCodeContainingIgnoreCaseAndNameContainingIgnoreCase(
-					countryCode, name, pageable);
+			airports = airportRepository.findAllByCountry_CountryCodeContainingIgnoreCaseAndCountry_NameContainingIgnoreCase(
+					countryCode, countryName, pageable);
 		} else if(StringUtils.isNotBlank(countryCode)) {
 			// If only countrycode is present, then retrieve the list of
 			// airports based on countryCode
 			airports = airportRepository.findAllByCountry_CountryCodeContainingIgnoreCase(countryCode, pageable);
-		} else if(StringUtils.isNotBlank(name)) {
+		} else if(StringUtils.isNotBlank(countryName)) {
 			// If only name is present, then retrieve the list of airports
 			// based on airport name
-			airports = airportRepository.findAllByNameContainingIgnoreCase(name, pageable);
+			airports = airportRepository.findAllByCountry_NameContainingIgnoreCase(countryName, pageable);
 		} else {
 			// If no filters are provided, then retrieve the list of airports
 			// with the pagination

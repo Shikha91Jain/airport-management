@@ -337,7 +337,7 @@ class AirportManagementApplicationTests {
 	}
 	
 	/**
-	 * Test case : Search Airport with airport's name, offset, limit, sortBy and
+	 * Test case : Search Airport with country's name, offset, limit, sortBy and
 	 * sortOrder as ASC in request
 	 * 
 	 * @throws Exception Thrown when exception occurs during execution
@@ -348,15 +348,15 @@ class AirportManagementApplicationTests {
 		reset(airportRepository);
 		
 		List<Airport> airports = AirportManagementTestUtil.getAirportList();
-		when(airportRepository.countByNameContainingIgnoreCase(ArgumentMatchers.anyString())).thenReturn(5L);
-		when(airportRepository.findAllByNameContainingIgnoreCase(ArgumentMatchers.anyString(), 
+		when(airportRepository.countByCountry_NameContainingIgnoreCase(ArgumentMatchers.anyString())).thenReturn(5L);
+		when(airportRepository.findAllByCountry_NameContainingIgnoreCase(ArgumentMatchers.anyString(), 
 				ArgumentMatchers.any(Pageable.class))).thenReturn(airports);
 		
 		this.mockMvc.perform(get("/airport-management/v1/airports")
-				.queryParam(Constants.NAME, AIRPORT_NAME)
+				.queryParam(Constants.COUNTRY_NAME, COUNTRY_NAME)
 				.queryParam(Constants.OFFSET, OFFSET)
 				.queryParam(Constants.LIMIT, LIMIT)
-				.queryParam(Constants.SORT_BY, Constants.NAME)
+				.queryParam(Constants.SORT_BY, Constants.COUNTRY_NAME)
 				.queryParam(Constants.SORT_ORDER, Constants.ASC))
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$.totalNumberOfRecords", is(5)))
@@ -366,22 +366,22 @@ class AirportManagementApplicationTests {
 	}
 	
 	/**
-	 * Test case : Search Airport with airport's name
+	 * Test case : Search Airport with country's name
 	 * 
 	 * @throws Exception Thrown when exception occurs during execution
 	 * of test case.
 	 */
 	@Test
-	void testSearchAirportByName() throws Exception {
+	void testSearchAirportByCountryName() throws Exception {
 		reset(airportRepository);
 		
 		List<Airport> airports = AirportManagementTestUtil.getAirportList();
-		when(airportRepository.countByNameContainingIgnoreCase(ArgumentMatchers.anyString())).thenReturn(2L);
-		when(airportRepository.findAllByNameContainingIgnoreCase(ArgumentMatchers.anyString(), 
+		when(airportRepository.countByCountry_NameContainingIgnoreCase(ArgumentMatchers.anyString())).thenReturn(2L);
+		when(airportRepository.findAllByCountry_NameContainingIgnoreCase(ArgumentMatchers.anyString(), 
 				ArgumentMatchers.any(Pageable.class))).thenReturn(airports);
 		
 		this.mockMvc.perform(get("/airport-management/v1/airports")
-				.queryParam(Constants.NAME, AIRPORT_NAME))
+				.queryParam(Constants.COUNTRY_NAME, COUNTRY_NAME))
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$.totalNumberOfRecords", is(2)))
 		.andExpect(jsonPath("$.airports", Matchers.hasSize(2)))
@@ -390,43 +390,43 @@ class AirportManagementApplicationTests {
 	}
 	
 	/**
-	 * Test case : Search Airport with airport's name but no records found
+	 * Test case : Search Airport with country's name but no records found
 	 * 
 	 * @throws Exception Thrown when exception occurs during execution
 	 * of test case.
 	 */
 	@Test
-	void testSearchAirportByNameNoRecordsFound() throws Exception {
+	void testSearchAirportByCountryNameNoRecordsFound() throws Exception {
 		reset(airportRepository);
 		
-		when(airportRepository.countByNameContainingIgnoreCase(ArgumentMatchers.anyString())).thenReturn(0L);
+		when(airportRepository.countByCountry_NameContainingIgnoreCase(ArgumentMatchers.anyString())).thenReturn(0L);
 		
 		this.mockMvc.perform(get("/airport-management/v1/airports")
-				.queryParam(Constants.NAME, AIRPORT_NAME))
+				.queryParam(Constants.COUNTRY_NAME, COUNTRY_NAME))
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$.totalNumberOfRecords", is(0)))
 		.andExpect(jsonPath("$.airports", Matchers.hasSize(0)));
 	}
 	
 	/**
-	 * Test case : Search Airport with countryCode and airport's name
+	 * Test case : Search Airport with countryCode and country's name
 	 * 
 	 * @throws Exception Thrown when exception occurs during execution
 	 * of test case.
 	 */
 	@Test
-	void testSearchAirportByCountryCodeAndName() throws Exception {
+	void testSearchAirportByCountryCodeAndCountryName() throws Exception {
 		reset(airportRepository);
 		
 		List<Airport> airports = AirportManagementTestUtil.getAirportList();
-		when(airportRepository.countByCountry_CountryCodeContainingIgnoreCaseAndNameContainingIgnoreCase(ArgumentMatchers
+		when(airportRepository.countByCountry_CountryCodeContainingIgnoreCaseAndCountry_NameContainingIgnoreCase(ArgumentMatchers
 				.anyString(), ArgumentMatchers.anyString())).thenReturn(10L);
-		when(airportRepository.findAllByCountry_CountryCodeContainingIgnoreCaseAndNameContainingIgnoreCase(ArgumentMatchers
+		when(airportRepository.findAllByCountry_CountryCodeContainingIgnoreCaseAndCountry_NameContainingIgnoreCase(ArgumentMatchers
 				.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(Pageable.class))).thenReturn(airports);
 		
 		this.mockMvc.perform(get("/airport-management/v1/airports")
 				.queryParam(Constants.COUNTRY_COUNTRY_CODE, COUNTRY_CODE)
-				.queryParam(Constants.NAME, AIRPORT_NAME)
+				.queryParam(Constants.COUNTRY_NAME, COUNTRY_NAME)
 				.queryParam(Constants.OFFSET, OFFSET)
 				.queryParam(Constants.LIMIT, LIMIT))
 		.andExpect(status().isOk())
@@ -437,22 +437,22 @@ class AirportManagementApplicationTests {
 	}
 	
 	/**
-	 * Test case : Search Airport with countryCode, airport's name but no records
+	 * Test case : Search Airport with countryCode, country's name but no records
 	 * found
 	 * 
 	 * @throws Exception Thrown when exception occurs during execution
 	 * of test case.
 	 */
 	@Test
-	void testSearchAirportByCountryCodeAndNameNoRecordsFound() throws Exception {
+	void testSearchAirportByCountryCodeAndCountryNameNoRecordsFound() throws Exception {
 		reset(airportRepository);
 		
-		when(airportRepository.countByCountry_CountryCodeContainingIgnoreCaseAndNameContainingIgnoreCase(ArgumentMatchers
+		when(airportRepository.countByCountry_CountryCodeContainingIgnoreCaseAndCountry_NameContainingIgnoreCase(ArgumentMatchers
 				.anyString(), ArgumentMatchers.anyString())).thenReturn(0L);
 		
 		this.mockMvc.perform(get("/airport-management/v1/airports")
 				.queryParam(Constants.COUNTRY_COUNTRY_CODE, COUNTRY_CODE)
-				.queryParam(Constants.NAME, AIRPORT_NAME))
+				.queryParam(Constants.COUNTRY_NAME, COUNTRY_NAME))
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$.totalNumberOfRecords", is(0)))
 		.andExpect(jsonPath("$.airports", Matchers.hasSize(0)));

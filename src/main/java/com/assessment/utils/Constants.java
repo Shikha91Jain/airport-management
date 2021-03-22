@@ -23,6 +23,7 @@ public final class Constants {
 	
 	public static final String COUNTRY_CODE = "countryCode";
 	public static final String COUNTRY_COUNTRY_CODE = "country.countryCode";
+	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNT = "count";
 	public static final String AIRPORT = "airport";
 	

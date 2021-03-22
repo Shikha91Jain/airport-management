@@ -34,7 +34,7 @@ public final class RequestValidator {
 	public static void validateSearchAirport(String sortBy, String sortOrder) throws BadRequestException {
 		validateValuesForParameter(sortOrder, Constants.SORT_ORDER, Constants.ASC, Constants.DESC);
 		if(!StringUtils.equalsAnyIgnoreCase(sortBy, Constants.COUNTRY_COUNTRY_CODE, 
-				Constants.NAME)) {
+				Constants.COUNTRY_NAME)) {
 			throw new BadRequestException(StatusCodes.INVALID_VALUE_FOR_PARAM.getCode(), StatusCodes
 					.INVALID_VALUE_FOR_PARAM.getReason(), Constants.SORT_BY);
 		}

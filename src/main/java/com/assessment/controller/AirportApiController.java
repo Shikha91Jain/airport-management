@@ -69,17 +69,17 @@ public class AirportApiController {
         produces = { "application/json; charset=UTF-8" })
     public ResponseEntity<AirportResponse> searchAirport(
     		@ApiParam(value = "ISO code of the country for which list of airports needs to be searched. This is an optional field and if provided, then API will return airports matching the provided countryCode.") @Valid @RequestParam(value = "country.countryCode", required = false) String countryCode,
-    		@ApiParam(value = "Name of the airport based on which list of airports needs to be searched. This is an optional field and if provided, then API will return airports matching the provided name.") @Valid @RequestParam(value = "name", required = false) String name,
+    		@ApiParam(value = "Name of the country based on which list of airports needs to be searched. This is an optional field and if provided, then API will return airports matching the provided name.") @Valid @RequestParam(value = "country.name", required = false) String countryName,
     		@ApiParam(value = "Requested index for start of resources to be provided in response. Default value: 0", defaultValue = "0") @Valid @RequestParam(value = "offset", required = false, defaultValue="0") Integer offset,
     		@ApiParam(value = "Requested number of maximum number of airports to be provided in response. Default value: 20") @Valid @RequestParam(value = "limit", required = false) Integer limit,
     		@ApiParam(value = "Name of the search parameter over which the results needs to be sorted. Possible Values: countryCode, name Note: If not present in request, then default value countryCode will be considered.", defaultValue = "country.countryCode") @Valid @RequestParam(value = "sortBy", required = false, defaultValue="country.countryCode") String sortBy,
     		@ApiParam(value = "Defines the order in which the result would be returned. Possible Values: ASC(Ascending), DESC(Descending) Note: This is an optional field, and if not provided then default sortOrder will be considered as ASC", defaultValue = "ASC") @Valid @RequestParam(value = "sortOrder", required = false, defaultValue="ASC") String sortOrder) 
     				throws BadRequestException {
         
-    	LOGGER.debug("In searchAirport with name: [{}], countryCode: [{}]", name, countryCode);
+    	LOGGER.debug("In searchAirport with countryName: [{}], countryCode: [{}]", countryName, countryCode);
     	
     	RequestValidator.validateSearchAirport(sortBy, sortOrder);
-    	AirportResponse airportResponse = airportService.searchAirport(countryCode, name, offset, limit, sortBy, sortOrder);
+    	AirportResponse airportResponse = airportService.searchAirport(countryCode, countryName, offset, limit, sortBy, sortOrder);
     	return ResponseEntity.ok(airportResponse);
     }
 

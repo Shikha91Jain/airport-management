@@ -61,7 +61,7 @@ public interface AirportRepository extends JpaRepository<Airport, Long> {
 	 * @return List<Airport> - List of airports found based on the given
 	 * isoCountryCode
 	 */
-	List<Airport> findAllByNameContainingIgnoreCase(String name, Pageable pageable);
+	List<Airport> findAllByCountry_NameContainingIgnoreCase(String name, Pageable pageable);
 	
 	/**
 	 * Method to retrieve the count of airports present in DB based
@@ -74,7 +74,7 @@ public interface AirportRepository extends JpaRepository<Airport, Long> {
 	 * needs to be retrieved.
 	 * @return long - Count of airports found
 	 */
-	long countByNameContainingIgnoreCase(String name);
+	long countByCountry_NameContainingIgnoreCase(String name);
 	
 	/**
 	 * Method to search list of airports based on the given country
@@ -85,13 +85,13 @@ public interface AirportRepository extends JpaRepository<Airport, Long> {
 	 * 
 	 * @param countryCode - Country code based on which airports needs to
 	 * be searched
-	 * @param name - Name of the airport based on which airports needs to
+	 * @param name - Name of the country based on which airports needs to
 	 * be searched
 	 * @param pageable - Pagination and sorting parameters to be applied
 	 * when querying database.
 	 * @return List<Airport> - List of airports found for given input
 	 */
-	List<Airport> findAllByCountry_CountryCodeContainingIgnoreCaseAndNameContainingIgnoreCase(String countryCode, String name, Pageable pageable);
+	List<Airport> findAllByCountry_CountryCodeContainingIgnoreCaseAndCountry_NameContainingIgnoreCase(String countryCode, String name, Pageable pageable);
 	
 	/**
 	 * Method to retrieve the count of airports present in DB based
@@ -102,10 +102,10 @@ public interface AirportRepository extends JpaRepository<Airport, Long> {
 	 * 
 	 * @param countryCode - Country code based on which airports needs to
 	 * be searched
-	 * @param name - Name of the airport based on which airports needs to
+	 * @param name - Name of the country based on which airports needs to
 	 * be searched
 	 * @return long - Count of airports found for given input
 	 */
-	long countByCountry_CountryCodeContainingIgnoreCaseAndNameContainingIgnoreCase(String countryCode, String name);
+	long countByCountry_CountryCodeContainingIgnoreCaseAndCountry_NameContainingIgnoreCase(String countryCode, String name);
 	
 }
