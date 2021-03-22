@@ -28,7 +28,7 @@ The application is a spring boot application built on Java 8 with using the star
 Application is connecting to PostgreSQL database to retrieve the required details for country/airport/runway. PFB the Entity Relationship(ER) diagram of the tables created in PostgeSQL database that will be used by the application:
 
 
-![alt text][https://github.com/Shikha91Jain/airport-management/tree/master/src/main/resources/images/Assessment_ER_Diagram.PNG "ER Diagram"]
+![ER Diagram](https://github.com/Shikha91Jain/airport-management/blob/master/src/main/resources/images/Assessment_ER_Diagram.PNG)
 
 
 ## Usecase Walkthrough
